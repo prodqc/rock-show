@@ -1,11 +1,25 @@
+import org.gradle.authentication.http.BasicAuthentication
+
 allprojects {
-    maven {
-  url 'https://api.mapbox.com/downloads/v2/releases/maven'
-  credentials { username = "mapbox"; password = project.properties['MAPBOX_DOWNLOADS_TOKEN'] ?: "" }
-}
     repositories {
         google()
         mavenCentral()
+
+        maven {
+            url = uri("https://api.mapbox.com/downloads/v2/releases/maven")
+
+            credentials {
+                username = "mapbox"
+                password =
+                    (project.findProperty("MAPBOX_DOWNLOADS_TOKEN") as String?)
+                        ?: System.getenv("MAPBOX_DOWNLOADS_TOKEN")
+                        ?: ""
+            }
+
+            authentication {
+                create<BasicAuthentication>("basic")
+            }
+        }
     }
 }
 

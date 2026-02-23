@@ -4,6 +4,9 @@
         android:label="rock_show"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <meta-data
+        android:name="MAPBOX_ACCESS_TOKEN"
+        android:value="pk.eyJ1IjoicWNveDIzIiwiYSI6ImNtbHlja3p0cjEydG4zZ29tZzV1N3p4MnkifQ.U89akZI-mcYVbrHfdRN1lw" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
