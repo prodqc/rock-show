@@ -1,0 +1,57 @@
+name: rockshow
+description: Discover local concerts and venues.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.2.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Firebase
+  firebase_core: ^3.8.1
+  firebase_auth: ^5.4.1
+  cloud_firestore: ^5.6.0
+  firebase_storage: ^12.4.1
+  firebase_app_check: ^0.3.2+3
+  firebase_analytics: ^11.4.1
+  firebase_crashlytics: ^4.2.1
+
+  # Auth
+  google_sign_in: ^6.2.2
+
+  # State management
+  flutter_riverpod: ^2.6.1
+  riverpod_annotation: ^2.6.1
+
+  # Routing
+  go_router: ^14.6.2
+
+  # Maps
+  mapbox_maps_flutter: ^2.4.0
+
+  # Location
+  geolocator: ^13.0.2
+  permission_handler: ^11.3.1
+
+  # UI
+  google_fonts: ^6.2.1
+  cached_network_image: ^3.4.1
+  flutter_animate: ^4.5.0
+  image_picker: ^1.1.2
+
+  # Utils
+  uuid: ^4.5.1
+  intl: ^0.19.0
+  collection: ^1.18.0
+  url_launcher: ^6.3.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  riverpod_generator: ^2.6.2
+  build_runner: ^2.4.13
+  json_serializable: ^6.8.0
