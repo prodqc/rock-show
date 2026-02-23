@@ -26,7 +26,7 @@ class HomeScreen extends ConsumerWidget {
             expandedHeight: 100,
             floating: true,
             flexibleSpace: FlexibleSpaceBar(
-              title: Text('GigLocal',
+              title: Text('Rock Show',
                   style: Theme.of(context).textTheme.displayMedium),
               titlePadding:
                   const EdgeInsets.only(left: AppSpacing.md, bottom: 16),

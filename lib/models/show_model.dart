@@ -21,6 +21,7 @@ class ShowModel {
   final String flyerUrl;
   final String promoter;
   final String status;
+  final String titleLower;
   final String createdBy;
   final ShowStats stats;
   final DateTime createdAt;
@@ -46,6 +47,7 @@ class ShowModel {
     this.flyerUrl = '',
     this.promoter = '',
     this.status = 'active',
+    this.titleLower = '',
     required this.createdBy,
     this.stats = const ShowStats(),
     required this.createdAt,
@@ -82,6 +84,7 @@ class ShowModel {
       flyerUrl: data['flyerUrl'] ?? '',
       promoter: data['promoter'] ?? '',
       status: data['status'] ?? 'active',
+      titleLower: data['titleLower'] ?? '',
       createdBy: data['createdBy'] ?? '',
       stats: ShowStats.fromMap(data['stats'] ?? {}),
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
@@ -109,6 +112,7 @@ class ShowModel {
         'flyerUrl': flyerUrl,
         'promoter': promoter,
         'status': status,
+        'titleLower': title.toLowerCase(),
         'createdBy': createdBy,
         'stats': stats.toMap(),
         'createdAt': Timestamp.fromDate(createdAt),

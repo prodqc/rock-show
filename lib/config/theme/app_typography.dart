@@ -61,7 +61,7 @@ class AppTypography {
       bodySmall: GoogleFonts.inter(
         fontSize: 12,
         fontWeight: FontWeight.w400,
-        color: color.withOpacity(0.7),
+        color: color.withValues(),
       ),
       labelLarge: GoogleFonts.inter(
         fontSize: 14,

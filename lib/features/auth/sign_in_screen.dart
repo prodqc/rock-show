@@ -64,7 +64,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const SizedBox(height: AppSpacing.xxl),
-                Text('GigLocal',
+                Text('Rock Show',
                     style: theme.textTheme.displayLarge,
                     textAlign: TextAlign.center),
                 const SizedBox(height: AppSpacing.sm),
