@@ -13,6 +13,7 @@ class ProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authUser = ref.watch(currentUserProvider);
+
     if (authUser == null) {
       return Scaffold(
         body: Center(
@@ -30,10 +31,18 @@ class ProfileScreen extends ConsumerWidget {
           .doc(authUser.uid)
           .snapshots(),
       builder: (context, snapshot) {
-        if (!snapshot.hasData || !snapshot.data!.exists) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
               body: Center(child: CircularProgressIndicator()));
         }
+
+        // If the user doc doesn't exist yet, create it automatically
+        if (!snapshot.hasData || !snapshot.data!.exists) {
+          _createUserDoc(authUser);
+          return const Scaffold(
+              body: Center(child: CircularProgressIndicator()));
+        }
+
         final user = UserModel.fromFirestore(snapshot.data!);
         final theme = Theme.of(context);
 
@@ -57,16 +66,16 @@ class ProfileScreen extends ConsumerWidget {
             padding: const EdgeInsets.all(AppSpacing.lg),
             child: Column(
               children: [
-                // Avatar
                 CircleAvatar(
                   radius: 50,
                   backgroundImage: user.avatarUrl.isNotEmpty
                       ? NetworkImage(user.avatarUrl)
                       : null,
                   child: user.avatarUrl.isEmpty
-                      ? Text(user.displayName.isNotEmpty
-                          ? user.displayName[0].toUpperCase()
-                          : '?',
+                      ? Text(
+                          user.displayName.isNotEmpty
+                              ? user.displayName[0].toUpperCase()
+                              : '?',
                           style: const TextStyle(fontSize: 36))
                       : null,
                 ),
@@ -83,8 +92,6 @@ class ProfileScreen extends ConsumerWidget {
                       textAlign: TextAlign.center),
                 ],
                 const SizedBox(height: AppSpacing.lg),
-
-                // Stats row
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -100,8 +107,6 @@ class ProfileScreen extends ConsumerWidget {
                   ],
                 ),
                 const SizedBox(height: AppSpacing.lg),
-
-                // Genres
                 if (user.favoriteGenres.isNotEmpty) ...[
                   Wrap(
                     spacing: 8,
@@ -116,6 +121,37 @@ class ProfileScreen extends ConsumerWidget {
         );
       },
     );
+  }
+
+  /// Auto-creates a Firestore user document from the Firebase Auth user.
+  static Future<void> _createUserDoc(dynamic authUser) async {
+    final docRef =
+        FirebaseFirestore.instance.collection('users').doc(authUser.uid);
+    final snap = await docRef.get();
+    if (!snap.exists) {
+      await docRef.set({
+        'uid': authUser.uid,
+        'displayName': authUser.displayName ?? '',
+        'username': '',
+        'avatarUrl': authUser.photoURL ?? '',
+        'bio': '',
+        'city': '',
+        'state': '',
+        'favoriteGenres': <String>[],
+        'links': <String, String>{},
+        'role': 'user',
+        'trustLevel': 1,
+        'stats': {
+          'followerCount': 0,
+          'followingCount': 0,
+          'venuesCreated': 0,
+          'showsCreated': 0,
+          'reviewsWritten': 0,
+        },
+        'createdAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+    }
   }
 }
 

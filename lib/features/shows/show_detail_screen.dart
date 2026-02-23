@@ -152,7 +152,7 @@ class ShowDetailScreen extends ConsumerWidget {
                         margin: const EdgeInsets.only(top: AppSpacing.md),
                         padding: const EdgeInsets.all(AppSpacing.md),
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.error.withOpacity(0.1),
+                          color: theme.colorScheme.error.withValues(),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Row(

@@ -104,6 +104,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
       // Detail routes (outside shell for full-screen experience)
       GoRoute(
+        path: '/venue/create',
+        name: RouteNames.createVenue,
+        builder: (_, __) => const CreateVenueScreen(),
+      ),
+      GoRoute(
         path: '/venue/:venueId',
         name: RouteNames.venueDetail,
         builder: (_, state) => VenueDetailScreen(
@@ -111,22 +116,17 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(
-        path: '/venue/create',
-        name: RouteNames.createVenue,
-        builder: (_, __) => const CreateVenueScreen(),
+        path: '/show/create',
+        name: RouteNames.createShow,
+        builder: (_, state) => CreateShowScreen(
+          venueId: state.uri.queryParameters['venueId'],
+        ),
       ),
       GoRoute(
         path: '/show/:showId',
         name: RouteNames.showDetail,
         builder: (_, state) => ShowDetailScreen(
           showId: state.pathParameters['showId']!,
-        ),
-      ),
-      GoRoute(
-        path: '/show/create',
-        name: RouteNames.createShow,
-        builder: (_, state) => CreateShowScreen(
-          venueId: state.uri.queryParameters['venueId'],
         ),
       ),
       GoRoute(
