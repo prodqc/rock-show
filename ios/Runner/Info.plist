@@ -27,7 +27,7 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>MBXAccessToken</key>
-	<string>$(sk.eyJ1IjoicWNveDIzIiwiYSI6ImNtbHljdmlrdjEyemYzZm9sZGpwc29ncGkifQ.RaY_rtI95epW672vfPUS1Q)</string>
+	<string>$(pk.eyJ1IjoicWNveDIzIiwiYSI6ImNtbHlja3p0cjEydG4zZ29tZzV1N3p4MnkifQ.U89akZI-mcYVbrHfdRN1lw)</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>RockShow needs your location to show nearby venues and shows.</string>
 	<key>UIApplicationSceneManifest</key>
@@ -70,5 +70,16 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>CFBundleURLTypes</key>
+    <array>
+    <dict>
+        <key>CFBundleTypeRole</key>
+        <string>Editor</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+            <string>com.googleusercontent.apps.72151577835-jlb7bjsut2avvo8pmdk59h9h3ggksgng</string>
+        </array>
+    </dict>
+</array>
 </dict>
 </plist>

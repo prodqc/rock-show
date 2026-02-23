@@ -6,7 +6,7 @@
 class EnvConfig {
   static const mapboxAccessToken = String.fromEnvironment(
     'MAPBOX_ACCESS_TOKEN',
-    defaultValue: '',
+    defaultValue: 'pk.eyJ1IjoicWNveDIzIiwiYSI6ImNtbHlja3p0cjEydG4zZ29tZzV1N3p4MnkifQ.U89akZI-mcYVbrHfdRN1lw',
   );
 
   static const mapboxStyleLight = String.fromEnvironment(
