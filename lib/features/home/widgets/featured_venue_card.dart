@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../../models/venue_model.dart';
 import '../../../shared/widgets/star_rating.dart';
 import '../../../config/theme/app_spacing.dart';
-import '../../../config/theme/app_radius.dart';
 
 class FeaturedVenueCard extends StatelessWidget {
   final VenueModel venue;

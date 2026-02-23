@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../providers/venue_providers.dart';
 import '../../providers/auth_providers.dart';
 import '../../models/venue_model.dart';
@@ -28,8 +27,8 @@ class _CreateVenueScreenState extends ConsumerState<CreateVenueScreen> {
   final _capacityCtrl = TextEditingController();
 
   // In production, get from geocoding. Stub for now.
-  double _lat = 0;
-  double _lng = 0;
+  final double _lat = 0;
+  final double _lng = 0;
 
   bool _loading = false;
   final List<String> _selectedTags = [];

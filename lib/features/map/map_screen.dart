@@ -4,8 +4,6 @@ import '../../providers/location_providers.dart';
 import '../../providers/venue_providers.dart';
 import '../../services/map/map_provider.dart';
 import '../../services/map/mapbox_provider.dart';
-import '../../config/theme/app_spacing.dart';
-import '../../config/theme/app_radius.dart';
 import '../../models/app_lat_lng.dart';
 import 'widgets/venue_preview_sheet.dart';
 

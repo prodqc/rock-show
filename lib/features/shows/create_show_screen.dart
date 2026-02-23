@@ -25,14 +25,14 @@ class _CreateShowScreenState extends ConsumerState<CreateShowScreen> {
   final _promoterCtrl = TextEditingController();
 
   DateTime _date = DateTime.now().add(const Duration(days: 1));
-  TimeOfDay _doorsTime = const TimeOfDay(hour: 19, minute: 0);
+  final TimeOfDay _doorsTime = const TimeOfDay(hour: 19, minute: 0);
   String _ageRestriction = 'all-ages';
   final List<String> _genres = [];
   final List<TextEditingController> _lineupCtrls = [TextEditingController()];
   bool _loading = false;
 
   String? _selectedVenueId;
-  String _selectedVenueName = '';
+  final String _selectedVenueName = '';
 
   @override
   void initState() {

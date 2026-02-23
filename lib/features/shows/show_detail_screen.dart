@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../providers/show_providers.dart';
 import '../../shared/widgets/genre_chip.dart';
-import '../../shared/widgets/star_rating.dart';
 import '../../config/theme/app_spacing.dart';
 
 class ShowDetailScreen extends ConsumerWidget {
@@ -70,10 +69,9 @@ class ShowDetailScreen extends ConsumerWidget {
                           .format(show.date)),
                       subtitle: show.doorsTime != null
                           ? Text(
-                              'Doors ${DateFormat.jm().format(show.doorsTime!)}' +
-                                  (show.startTime != null
+                              'Doors ${DateFormat.jm().format(show.doorsTime!)}${show.startTime != null
                                       ? ' · Show ${DateFormat.jm().format(show.startTime!)}'
-                                      : ''))
+                                      : ''}')
                           : null,
                     ),
 

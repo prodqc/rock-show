@@ -1,4 +1,3 @@
-import 'dart:math';
 
 /// Lightweight geohash encoder + range calculator.
 /// No external dependencies.

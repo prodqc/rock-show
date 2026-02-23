@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import '../../providers/auth_providers.dart';
 import '../../models/activity_model.dart';
 import '../../shared/widgets/empty_state.dart';
-import '../../config/theme/app_spacing.dart';
 
 class ActivityFeedScreen extends ConsumerWidget {
   const ActivityFeedScreen({super.key});

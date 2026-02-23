@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 import '../../../models/show_model.dart';
 import '../../../shared/widgets/genre_chip.dart';
 import '../../../config/theme/app_spacing.dart';
-import '../../../config/theme/app_radius.dart';
 
 class NearbyShowCard extends StatelessWidget {
   final ShowModel show;
