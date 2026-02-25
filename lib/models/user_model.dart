@@ -12,6 +12,7 @@ class UserModel {
   final Map<String, String> links;
   final String role;
   final int trustLevel;
+  final bool isVerified;
   final UserStats stats;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -28,6 +29,7 @@ class UserModel {
     this.links = const {},
     this.role = 'user',
     this.trustLevel = 1,
+    this.isVerified = false,
     this.stats = const UserStats(),
     required this.createdAt,
     required this.updatedAt,
@@ -47,6 +49,7 @@ class UserModel {
       links: Map<String, String>.from(data['links'] ?? {}),
       role: data['role'] ?? 'user',
       trustLevel: data['trustLevel'] ?? 1,
+      isVerified: data['isVerified'] ?? false,
       stats: UserStats.fromMap(data['stats'] ?? {}),
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       updatedAt: (data['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
@@ -65,6 +68,7 @@ class UserModel {
         'links': links,
         'role': role,
         'trustLevel': trustLevel,
+        'isVerified': isVerified,
         'stats': stats.toMap(),
         'createdAt': Timestamp.fromDate(createdAt),
         'updatedAt': Timestamp.fromDate(updatedAt),

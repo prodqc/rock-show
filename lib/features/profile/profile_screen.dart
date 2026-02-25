@@ -80,8 +80,20 @@ class ProfileScreen extends ConsumerWidget {
                       : null,
                 ),
                 const SizedBox(height: AppSpacing.md),
-                Text(user.displayName,
-                    style: theme.textTheme.displaySmall),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flexible(
+                      child: Text(user.displayName,
+                          style: theme.textTheme.displaySmall),
+                    ),
+                    if (user.isVerified) ...[
+                      const SizedBox(width: 6),
+                      const Icon(Icons.verified, color: Colors.black, size: 22),
+                    ],
+                  ],
+                ),
                 if (user.city.isNotEmpty)
                   Text('${user.city}, ${user.state}',
                       style: theme.textTheme.bodyMedium),

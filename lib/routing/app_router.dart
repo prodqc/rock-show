@@ -18,16 +18,28 @@ import '../features/profile/edit_profile_screen.dart';
 import '../features/reviews/write_review_screen.dart';
 import 'route_names.dart';
 
+// Keys live OUTSIDE the provider so they're never recreated
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
+/// Listenable that fires whenever auth state changes, so GoRouter
+/// re-evaluates its redirect without being fully recreated.
+class _AuthNotifier extends ChangeNotifier {
+_AuthNotifier(this._ref) {
+_ref.listen(isAuthenticatedProvider, (_, __) => notifyListeners());
+  }
+  final Ref _ref;
+}
+
 final appRouterProvider = Provider<GoRouter>((ref) {
-  final isAuthenticated = ref.watch(isAuthenticatedProvider);
+  final authNotifier = _AuthNotifier(ref);
 
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: '/home',
+    refreshListenable: authNotifier,
     redirect: (context, state) {
+      final isAuthenticated = ref.read(isAuthenticatedProvider);
       final isAuthRoute = state.matchedLocation.startsWith('/auth');
       final needsAuth = ['/venue/create', '/show/create', '/activity', '/profile']
           .any((p) => state.matchedLocation.startsWith(p));
@@ -102,7 +114,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         ],
       ),
 
-      // Detail routes (outside shell for full-screen experience)
+      // IMPORTANT: /create routes BEFORE /:id routes
       GoRoute(
         path: '/venue/create',
         name: RouteNames.createVenue,

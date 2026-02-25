@@ -6,6 +6,19 @@ import 'map_provider.dart';
 class MapboxProvider implements MapProvider {
   MapboxMap? _mapboxMap;
 
+  /// Zoom to a specific level (keeps current center).
+  Future<void> setZoom(double zoom) async {
+    final camera = await _mapboxMap?.getCameraState();
+    if (camera == null) return;
+    await _mapboxMap?.flyTo(
+      CameraOptions(
+        center: camera.center,
+        zoom: zoom,
+      ),
+      MapAnimationOptions(duration: 300),
+    );
+  }
+
   @override
   Widget buildMap({
     required AppLatLng initialCenter,
@@ -29,9 +42,15 @@ class MapboxProvider implements MapProvider {
       ),
       onMapCreated: (MapboxMap map) async {
         _mapboxMap = map;
-        // Disable telemetry (optional)
         map.compass.updateSettings(CompassSettings(enabled: false));
-        // Add venue markers
+        // Enable standard gestures
+        map.gestures.updateSettings(GesturesSettings(
+          pinchToZoomEnabled: true,
+          doubleTapToZoomInEnabled: true,
+          doubleTouchToZoomOutEnabled: true,
+          scrollEnabled: true,
+          rotateEnabled: true,
+        ));
         await _addMarkers(map, markers, onMarkerTap);
       },
     );

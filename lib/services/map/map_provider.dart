@@ -40,4 +40,7 @@ abstract class MapProvider {
 
   /// Recenter on user location.
   Future<void> recenterToUser(AppLatLng userLocation);
+
+  /// Set zoom level (keeps current center).
+  Future<void> setZoom(double zoom);
 }
