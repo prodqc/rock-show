@@ -1,4 +1,6 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:shimmer/shimmer.dart';
 import '../../../models/venue_model.dart';
 import '../../../shared/widgets/star_rating.dart';
 import '../../../shared/widgets/genre_chip.dart';
@@ -13,28 +15,49 @@ class VenueCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-      child: Card(
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onTap,
-          child: Row(
+    return InkWell(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Row(
             children: [
               // Thumbnail
-              SizedBox(
-                width: 100,
-                height: 100,
-                child: venue.photos.isNotEmpty
-                    ? Image.network(venue.photos.first, fit: BoxFit.cover)
-                    : Container(
-                        color: theme.colorScheme.surfaceContainerHighest,
-                        child: const Icon(Icons.location_city),
-                      ),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: SizedBox(
+                  width: 80,
+                  height: 80,
+                  child: venue.photos.isNotEmpty
+                      ? CachedNetworkImage(
+                          imageUrl: venue.photos.first,
+                          fit: BoxFit.cover,
+                          width: 80,
+                          height: 80,
+                          placeholder: (_, __) => Shimmer.fromColors(
+                            baseColor:
+                                theme.colorScheme.surfaceContainerHighest,
+                            highlightColor:
+                                theme.colorScheme.surface.withValues(alpha: 0.8),
+                            child: Container(
+                              color: theme.colorScheme.surfaceContainerHighest,
+                            ),
+                          ),
+                          errorWidget: (_, __, ___) => Container(
+                            color: theme.colorScheme.surfaceContainerHighest,
+                            child: const Icon(Icons.location_city),
+                          ),
+                        )
+                      : Container(
+                          color: theme.colorScheme.surfaceContainerHighest,
+                          child: const Icon(Icons.location_city),
+                        ),
+                ),
               ),
+              const SizedBox(width: AppSpacing.md),
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.all(AppSpacing.md),
+                  padding: const EdgeInsets.symmetric(
+                      vertical: AppSpacing.sm),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -71,9 +94,11 @@ class VenueCard extends StatelessWidget {
                   ),
                 ),
               ),
+              const SizedBox(width: AppSpacing.sm),
             ],
           ),
-        ),
+          const Divider(height: 1),
+        ],
       ),
     );
   }

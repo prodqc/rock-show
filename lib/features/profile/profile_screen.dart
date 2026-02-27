@@ -1,7 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../providers/auth_providers.dart';
 import '../../models/user_model.dart';
 import '../../shared/widgets/genre_chip.dart';
@@ -48,17 +49,24 @@ class ProfileScreen extends ConsumerWidget {
 
         return Scaffold(
           appBar: AppBar(
-            title: Text('Profile',
-                style: theme.textTheme.displaySmall),
+            title: Text('Profile', style: theme.textTheme.displaySmall),
             actions: [
+              if (user.role == 'admin')
+                IconButton(
+                  icon: const Icon(Icons.admin_panel_settings_outlined),
+                  onPressed: () => context.push('/admin/moderation'),
+                ),
+              IconButton(
+                icon: const Icon(Icons.mail_outline),
+                onPressed: () => context.push('/contact'),
+              ),
               IconButton(
                 icon: const Icon(Icons.edit),
                 onPressed: () => context.push('/profile/edit'),
               ),
               IconButton(
                 icon: const Icon(Icons.logout),
-                onPressed: () =>
-                    ref.read(authRepositoryProvider).signOut(),
+                onPressed: () => ref.read(authRepositoryProvider).signOut(),
               ),
             ],
           ),
@@ -69,7 +77,7 @@ class ProfileScreen extends ConsumerWidget {
                 CircleAvatar(
                   radius: 50,
                   backgroundImage: user.avatarUrl.isNotEmpty
-                      ? NetworkImage(user.avatarUrl)
+                      ? CachedNetworkImageProvider(user.avatarUrl)
                       : null,
                   child: user.avatarUrl.isEmpty
                       ? Text(
@@ -90,7 +98,11 @@ class ProfileScreen extends ConsumerWidget {
                     ),
                     if (user.isVerified) ...[
                       const SizedBox(width: 6),
-                      const Icon(Icons.verified, color: Colors.black, size: 22),
+                      Icon(
+                        Icons.verified,
+                        color: theme.colorScheme.primary,
+                        size: 22,
+                      ),
                     ],
                   ],
                 ),
@@ -108,14 +120,11 @@ class ProfileScreen extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     _StatTile(
-                        label: 'Followers',
-                        count: user.stats.followerCount),
+                        label: 'Followers', count: user.stats.followerCount),
                     _StatTile(
-                        label: 'Following',
-                        count: user.stats.followingCount),
+                        label: 'Following', count: user.stats.followingCount),
                     _StatTile(
-                        label: 'Reviews',
-                        count: user.stats.reviewsWritten),
+                        label: 'Reviews', count: user.stats.reviewsWritten),
                   ],
                 ),
                 const SizedBox(height: AppSpacing.lg),
@@ -143,6 +152,7 @@ class ProfileScreen extends ConsumerWidget {
     if (!snap.exists) {
       await docRef.set({
         'uid': authUser.uid,
+        'email': authUser.email ?? '',
         'displayName': authUser.displayName ?? '',
         'username': '',
         'avatarUrl': authUser.photoURL ?? '',
@@ -153,6 +163,10 @@ class ProfileScreen extends ConsumerWidget {
         'links': <String, String>{},
         'role': 'user',
         'trustLevel': 1,
+        'trustScore': 0.0,
+        'isVerified': false,
+        'verifiedAt': null,
+        'subscriptionTier': 'free',
         'stats': {
           'followerCount': 0,
           'followingCount': 0,
@@ -176,8 +190,7 @@ class _StatTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text('$count',
-            style: Theme.of(context).textTheme.titleLarge),
+        Text('$count', style: Theme.of(context).textTheme.titleLarge),
         Text(label, style: Theme.of(context).textTheme.bodySmall),
       ],
     );

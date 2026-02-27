@@ -5,6 +5,9 @@ import 'package:google_fonts/google_fonts.dart';
 ///   Headings: Playfair Display (serif, editorial, bold)
 ///   Body: Inter (clean, modern sans-serif)
 class AppTypography {
+  static const String headingFontFamily = 'Playfair Display';
+  static const String bodyFontFamily = 'Inter';
+
   static TextTheme textTheme(Brightness brightness) {
     final color = brightness == Brightness.light
         ? const Color(0xFF1A1A2E)

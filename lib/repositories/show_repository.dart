@@ -13,6 +13,11 @@ abstract class ShowRepository {
 
   Future<String> createShow(ShowModel show);
 
+  Future<String> createShowSubmission({
+    required ShowModel show,
+    required String submitterUid,
+  });
+
   Future<void> updateShow(String showId, Map<String, dynamic> data);
 
   Future<void> deleteShow(String showId);

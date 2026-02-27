@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/venue_providers.dart';
@@ -17,6 +18,12 @@ class _VenueListScreenState extends ConsumerState<VenueListScreen> {
   final _searchCtrl = TextEditingController();
 
   @override
+  void dispose() {
+    _searchCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final venuesAsync = ref.watch(nearbyVenuesProvider);
 
@@ -32,7 +39,6 @@ class _VenueListScreenState extends ConsumerState<VenueListScreen> {
       ),
       body: Column(
         children: [
-          // Search bar
           Padding(
             padding: const EdgeInsets.all(AppSpacing.md),
             child: TextField(
@@ -59,26 +65,40 @@ class _VenueListScreenState extends ConsumerState<VenueListScreen> {
                   const Center(child: CircularProgressIndicator()),
               error: (e, _) => Center(child: Text('Error: $e')),
               data: (venues) {
-                if (venues.isEmpty) {
+                final query = _searchCtrl.text.toLowerCase().trim();
+                final filtered = query.isEmpty
+                    ? venues
+                    : venues
+                        .where((v) => v.nameLower.contains(query))
+                        .toList();
+
+                if (filtered.isEmpty) {
                   return EmptyState(
                     icon: Icons.location_city_rounded,
-                    title: 'No venues found',
-                    subtitle: 'Add a venue to get started',
-                    actionLabel: 'Add Venue',
-                    onAction: () => context.push('/venue/create'),
+                    title: query.isEmpty
+                        ? 'No venues found'
+                        : 'No results for "$query"',
+                    subtitle: query.isEmpty ? 'Add a venue to get started' : null,
+                    actionLabel: query.isEmpty ? 'Add Venue' : null,
+                    onAction: query.isEmpty
+                        ? () => context.push('/venue/create')
+                        : null,
                   );
                 }
                 return ListView.builder(
                   padding: const EdgeInsets.symmetric(
                       horizontal: AppSpacing.md),
-                  itemCount: venues.length,
+                  itemCount: filtered.length,
                   itemBuilder: (context, index) {
-                    final venue = venues[index];
+                    final venue = filtered[index];
                     return VenueCard(
                       venue: venue,
-                      onTap: () =>
-                          context.push('/venue/${venue.venueId}'),
-                    );
+                      onTap: () => context.push('/venue/${venue.venueId}'),
+                    )
+                        .animate(delay: Duration(milliseconds: 40 * index))
+                        .fadeIn(duration: 250.ms)
+                        .slideY(begin: 0.04, duration: 250.ms,
+                            curve: Curves.easeOut);
                   },
                 );
               },

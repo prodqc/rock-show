@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/venue_model.dart';
 import '../repositories/venue_repository.dart';
 import '../repositories/impl/firestore_venue_repository.dart';
+import 'auth_providers.dart';
 import 'location_providers.dart';
 
 final venueRepositoryProvider = Provider<VenueRepository>((ref) {
@@ -12,8 +13,13 @@ final nearbyVenuesProvider =
     FutureProvider.autoDispose<List<VenueModel>>((ref) async {
   final location = ref.watch(effectiveLocationProvider);
   if (location == null) return [];
+  final authUser = ref.watch(currentUserProvider);
   final repo = ref.read(venueRepositoryProvider);
-  return repo.getNearbyVenues(location, 15.0); // 15 km default radius
+  return repo.getNearbyVenues(
+    location,
+    15.0,
+    viewerUid: authUser?.uid,
+  ); // 15 km default radius
 });
 
 final venueDetailProvider =

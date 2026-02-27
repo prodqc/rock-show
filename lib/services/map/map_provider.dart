@@ -1,5 +1,6 @@
-import '../../models/app_lat_lng.dart';
 import 'package:flutter/widgets.dart';
+
+import '../../models/app_lat_lng.dart';
 
 /// Marker data for the map.
 class MapMarker {
@@ -32,8 +33,12 @@ abstract class MapProvider {
     required List<MapMarker> markers,
     required OnMarkerTap onMarkerTap,
     required bool isDarkMode,
+    ValueChanged<double>? onZoomChanged,
     Key? key,
   });
+
+  /// Update markers after initial map creation (e.g. when data loads).
+  Future<void> updateMarkers(List<MapMarker> markers);
 
   /// Programmatically move camera.
   Future<void> moveCamera(AppLatLng target, double zoom);

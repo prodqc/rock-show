@@ -11,7 +11,7 @@ class GigLocalApp extends ConsumerWidget {
     final router = ref.watch(appRouterProvider);
 
     return MaterialApp.router(
-      title: 'GigLocal',
+      title: 'Rock Show',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),

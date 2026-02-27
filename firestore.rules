@@ -1,0 +1,268 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function userDoc(uid) {
+      return get(/databases/$(database)/documents/users/$(uid)).data;
+    }
+
+    function requesterDoc() {
+      return signedIn() ? userDoc(request.auth.uid) : null;
+    }
+
+    function requesterRole() {
+      return signedIn() && requesterDoc() != null && requesterDoc().role is string
+          ? requesterDoc().role
+          : 'user';
+    }
+
+    function isAdmin() {
+      return signedIn() && requesterRole() == 'admin';
+    }
+
+    function venueExists(venueId) {
+      return exists(/databases/$(database)/documents/venues/$(venueId));
+    }
+
+    function venueDoc(venueId) {
+      return get(/databases/$(database)/documents/venues/$(venueId)).data;
+    }
+
+    function ownsVenue(venueId) {
+      return signedIn() && venueExists(venueId) &&
+          venueDoc(venueId).claimedBy == request.auth.uid;
+    }
+
+    function noPrivilegedUserFieldChanges() {
+      return !request.resource.data
+          .diff(resource.data)
+          .changedKeys()
+          .hasAny([
+            'role',
+            'isVerified',
+            'verifiedAt',
+            'subscriptionTier',
+            'trustScore',
+            'trustLevel'
+          ]);
+    }
+
+    function venueOwnerEditableFieldsOnly() {
+      return request.resource.data.diff(resource.data).changedKeys().hasOnly([
+        'name',
+        'nameLower',
+        'nameNormalized',
+        'address',
+        'location',
+        'photos',
+        'tags',
+        'genreTags',
+        'capacity',
+        'contact',
+        'venueType',
+        'seatingType',
+        'ageRestriction',
+        'hasParking',
+        'transitInfo',
+        'foodDrink',
+        'isAccessible',
+        'accessibilityNotes',
+        'coverChargeTypical',
+        'websiteUrl',
+        'socialLinks',
+        'updatedAt',
+      ]);
+    }
+
+    function validVenueCreate() {
+      return request.resource.data.createdBy == request.auth.uid
+          && request.resource.data.submittedBy == request.auth.uid
+          && request.resource.data.status == 'published';
+    }
+
+    function validShowCreate() {
+      return venueExists(request.resource.data.venueId)
+          && request.resource.data.createdBy == request.auth.uid
+          && request.resource.data.submittedBy == request.auth.uid
+          && (
+              (
+                ownsVenue(request.resource.data.venueId)
+                && requesterRole() == 'venue_owner'
+                && request.resource.data.trustLevel == 'verified_owner'
+                && request.resource.data.status == 'confirmed'
+              )
+              ||
+              (
+                !(ownsVenue(request.resource.data.venueId) && requesterRole() == 'venue_owner')
+                && request.resource.data.trustLevel == 'community'
+                && request.resource.data.status == 'community_reported'
+              )
+          );
+    }
+
+    function validCorroborationUpdate() {
+      return signedIn()
+          && request.resource.data.diff(resource.data).changedKeys().hasOnly([
+            'corroborationCount',
+            'status',
+            'updatedAt',
+          ])
+          && request.resource.data.corroborationCount is int
+          && resource.data.corroborationCount is int
+          && request.resource.data.corroborationCount == resource.data.corroborationCount + 1
+          && (
+            request.resource.data.status == resource.data.status
+            ||
+            (
+              (resource.data.status == 'community_reported' || resource.data.status == 'active')
+              && request.resource.data.status == 'confirmed'
+              && request.resource.data.corroborationCount >= 3
+            )
+          );
+    }
+
+    function submitterEditableShowFieldsOnly() {
+      return request.resource.data.diff(resource.data).changedKeys().hasOnly([
+        'title',
+        'description',
+        'date',
+        'doorsTime',
+        'startTime',
+        'endTime',
+        'lineup',
+        'genres',
+        'genreTags',
+        'coverCharge',
+        'priceAdvance',
+        'priceDoor',
+        'isFree',
+        'ageRestriction',
+        'ticketUrl',
+        'sourceUrl',
+        'sourceImageUrl',
+        'flyerUrl',
+        'promoter',
+        'updatedAt',
+      ]);
+    }
+
+    match /users/{uid} {
+      allow read: if true;
+
+      allow create: if signedIn()
+          && request.auth.uid == uid
+          && request.resource.data.role == 'user';
+
+      allow update: if
+          (signedIn() && request.auth.uid == uid && noPrivilegedUserFieldChanges())
+          || isAdmin();
+
+      allow delete: if isAdmin();
+
+      match /followers/{followerUid} {
+        allow read: if signedIn();
+        allow create, update, delete: if signedIn() && request.auth.uid == uid;
+      }
+
+      match /following/{followingUid} {
+        allow read: if signedIn();
+        allow create, update, delete: if signedIn() && request.auth.uid == uid;
+      }
+
+      match /saved_shows/{showId} {
+        allow read: if signedIn() && request.auth.uid == uid;
+        allow create, update, delete: if signedIn() && request.auth.uid == uid;
+      }
+    }
+
+    match /venues/{venueId} {
+      allow read: if true;
+
+      allow create: if signedIn() && validVenueCreate();
+
+      allow update: if
+          isAdmin()
+          || (signedIn() && resource.data.claimedBy == request.auth.uid && venueOwnerEditableFieldsOnly());
+
+      allow delete: if isAdmin();
+
+      match /reviews/{reviewId} {
+        allow read: if true;
+        allow create, update, delete: if signedIn()
+            && reviewId == request.auth.uid
+            && request.resource.data.authorUid == request.auth.uid;
+      }
+    }
+
+    match /shows/{showId} {
+      allow read: if true;
+
+      allow create: if signedIn() && validShowCreate();
+
+      allow update: if
+          isAdmin()
+          || validCorroborationUpdate()
+          || (signedIn() && resource.data.createdBy == request.auth.uid && submitterEditableShowFieldsOnly())
+          || (signedIn() && ownsVenue(resource.data.venueId)
+              && request.resource.data.diff(resource.data).changedKeys().hasOnly(['status', 'updatedAt']));
+
+      allow delete: if isAdmin();
+
+      match /reviews/{reviewId} {
+        allow read: if true;
+        allow create, update, delete: if signedIn()
+            && reviewId == request.auth.uid
+            && request.resource.data.authorUid == request.auth.uid;
+      }
+    }
+
+    match /reports/{reportId} {
+      allow create: if signedIn()
+          && request.resource.data.reporterUserId == request.auth.uid
+          && request.resource.data.status == 'open';
+
+      allow read: if isAdmin()
+          || (signedIn() && resource.data.reporterUserId == request.auth.uid);
+
+      allow update, delete: if isAdmin();
+    }
+
+    match /venue_claims/{claimId} {
+      allow create: if signedIn()
+          && request.resource.data.userId == request.auth.uid
+          && request.resource.data.status == 'pending';
+
+      allow read: if isAdmin()
+          || (signedIn() && resource.data.userId == request.auth.uid);
+
+      allow update, delete: if isAdmin();
+    }
+
+    match /contact_submissions/{submissionId} {
+      allow create: if
+          request.resource.data.userId == null
+          || (signedIn() && request.resource.data.userId == request.auth.uid);
+
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /activity/{activityId} {
+      allow read: if signedIn() && resource.data.recipientUid == request.auth.uid;
+      allow create: if signedIn();
+      allow update, delete: if isAdmin();
+    }
+
+    match /analytics_events/{eventId} {
+      allow create: if true;
+      allow read: if isAdmin();
+      allow update, delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

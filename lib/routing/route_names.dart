@@ -13,6 +13,10 @@ class RouteNames {
   static const showDetail = 'showDetail';
   static const createShow = 'createShow';
   static const writeReview = 'writeReview';
+  static const contact = 'contact';
+  static const claimVenue = 'claimVenue';
+  static const reportEntity = 'reportEntity';
+  static const adminModeration = 'adminModeration';
   static const followers = 'followers';
   static const following = 'following';
   static const userProfile = 'userProfile';

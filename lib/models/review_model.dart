@@ -7,7 +7,7 @@ class ReviewModel {
   final String authorUid;
   final String authorDisplayName;
   final String authorAvatarUrl;
-  final int rating;
+  final double rating;
   final String text;
   final int reportCount;
   final String status;
@@ -38,7 +38,7 @@ class ReviewModel {
       authorUid: data['authorUid'] ?? '',
       authorDisplayName: data['authorDisplayName'] ?? '',
       authorAvatarUrl: data['authorAvatarUrl'] ?? '',
-      rating: data['rating'] ?? 0,
+      rating: (data['rating'] as num?)?.toDouble() ?? 0,
       text: data['text'] ?? '',
       reportCount: data['reportCount'] ?? 0,
       status: data['status'] ?? 'active',

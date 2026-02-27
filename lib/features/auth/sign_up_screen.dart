@@ -30,7 +30,10 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
 
   Future<void> _signUp() async {
     if (!_formKey.currentState!.validate()) return;
-    setState(() { _loading = true; _error = null; });
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     try {
       final cred = await ref.read(authRepositoryProvider).signUpWithEmail(
             _emailCtrl.text.trim(),
@@ -40,6 +43,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
       final now = DateTime.now();
       final user = UserModel(
         uid: cred.user!.uid,
+        email: _emailCtrl.text.trim(),
         displayName: _nameCtrl.text.trim(),
         username: _nameCtrl.text.trim().toLowerCase().replaceAll(' ', '_'),
         createdAt: now,
@@ -85,8 +89,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                     labelText: 'Email',
                     prefixIcon: Icon(Icons.email_outlined),
                   ),
-                  validator: (v) =>
-                      (v == null || !v.contains('@')) ? 'Enter a valid email' : null,
+                  validator: (v) => (v == null || !v.contains('@'))
+                      ? 'Enter a valid email'
+                      : null,
                 ),
                 const SizedBox(height: AppSpacing.md),
                 TextFormField(

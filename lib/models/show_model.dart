@@ -12,8 +12,12 @@ class ShowModel {
   final DateTime? startTime;
   final DateTime? endTime;
   final List<LineupAct> lineup;
-  final List<String> genres;
+  final List<String> genres; // Legacy alias used by current UI.
+  final List<String> genreTags;
   final double? coverCharge;
+  final double? priceAdvance;
+  final double? priceDoor;
+  final bool isFree;
   final String currency;
   final String ageRestriction;
   final String ticketUrl;
@@ -21,7 +25,15 @@ class ShowModel {
   final String flyerUrl;
   final String promoter;
   final String status;
+  final String trustLevel;
+  final String sourceUrl;
+  final String sourceImageUrl;
+  final int corroborationCount;
+  final bool promoted;
+  final DateTime? promotedUntil;
+  final bool isArchived;
   final String titleLower;
+  final String submittedBy;
   final String createdBy;
   final ShowStats stats;
   final DateTime createdAt;
@@ -39,15 +51,27 @@ class ShowModel {
     this.endTime,
     this.lineup = const [],
     this.genres = const [],
+    this.genreTags = const [],
     this.coverCharge,
+    this.priceAdvance,
+    this.priceDoor,
+    this.isFree = false,
     this.currency = 'USD',
-    this.ageRestriction = 'all-ages',
+    this.ageRestriction = 'all_ages',
     this.ticketUrl = '',
     this.description = '',
     this.flyerUrl = '',
     this.promoter = '',
-    this.status = 'active',
+    this.status = 'community_reported',
+    this.trustLevel = 'community',
+    this.sourceUrl = '',
+    this.sourceImageUrl = '',
+    this.corroborationCount = 0,
+    this.promoted = false,
+    this.promotedUntil,
+    this.isArchived = false,
     this.titleLower = '',
+    this.submittedBy = '',
     required this.createdBy,
     this.stats = const ShowStats(),
     required this.createdAt,
@@ -76,15 +100,45 @@ class ShowModel {
               .toList() ??
           [],
       genres: List<String>.from(data['genres'] ?? []),
+      genreTags: List<String>.from(
+        data['genreTags'] ?? data['genre_tags'] ?? data['genres'] ?? [],
+      ),
       coverCharge: (data['coverCharge'] as num?)?.toDouble(),
+      priceAdvance:
+          (data['priceAdvance'] as num? ?? data['price_advance'] as num?)
+              ?.toDouble(),
+      priceDoor:
+          (data['priceDoor'] as num? ?? data['price_door'] as num?)?.toDouble(),
+      isFree: data['isFree'] ?? data['is_free'] ?? false,
       currency: data['currency'] ?? 'USD',
-      ageRestriction: data['ageRestriction'] ?? 'all-ages',
+      ageRestriction:
+          (data['ageRestriction'] ?? data['age_restriction'] ?? 'all_ages')
+              .toString(),
       ticketUrl: data['ticketUrl'] ?? '',
       description: data['description'] ?? '',
       flyerUrl: data['flyerUrl'] ?? '',
       promoter: data['promoter'] ?? '',
-      status: data['status'] ?? 'active',
+      status: (data['status'] ?? 'community_reported').toString(),
+      trustLevel:
+          (data['trustLevel'] ?? data['trust_level'] ?? 'community').toString(),
+      sourceUrl: (data['sourceUrl'] ?? data['source_url'] ?? '').toString(),
+      sourceImageUrl:
+          (data['sourceImageUrl'] ?? data['source_image_url'] ?? '').toString(),
+      corroborationCount: (data['corroborationCount'] as num? ??
+                  data['corroboration_count'] as num?)
+              ?.toInt() ??
+          0,
+      promoted: data['promoted'] ?? false,
+      promotedUntil: (data['promotedUntil'] as Timestamp? ??
+              data['promoted_until'] as Timestamp?)
+          ?.toDate(),
+      isArchived: data['isArchived'] ?? data['is_archived'] ?? false,
       titleLower: data['titleLower'] ?? '',
+      submittedBy: (data['submittedBy'] ??
+              data['submitted_by'] ??
+              data['createdBy'] ??
+              '')
+          .toString(),
       createdBy: data['createdBy'] ?? '',
       stats: ShowStats.fromMap(data['stats'] ?? {}),
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
@@ -99,12 +153,15 @@ class ShowModel {
         'title': title,
         'date': Timestamp.fromDate(date),
         'doorsTime': doorsTime != null ? Timestamp.fromDate(doorsTime!) : null,
-        'startTime':
-            startTime != null ? Timestamp.fromDate(startTime!) : null,
+        'startTime': startTime != null ? Timestamp.fromDate(startTime!) : null,
         'endTime': endTime != null ? Timestamp.fromDate(endTime!) : null,
         'lineup': lineup.map((e) => e.toMap()).toList(),
         'genres': genres,
+        'genreTags': genreTags.isEmpty ? genres : genreTags,
         'coverCharge': coverCharge,
+        'priceAdvance': priceAdvance,
+        'priceDoor': priceDoor,
+        'isFree': isFree,
         'currency': currency,
         'ageRestriction': ageRestriction,
         'ticketUrl': ticketUrl,
@@ -112,7 +169,16 @@ class ShowModel {
         'flyerUrl': flyerUrl,
         'promoter': promoter,
         'status': status,
+        'trustLevel': trustLevel,
+        'sourceUrl': sourceUrl,
+        'sourceImageUrl': sourceImageUrl,
+        'corroborationCount': corroborationCount,
+        'promoted': promoted,
+        'promotedUntil':
+            promotedUntil == null ? null : Timestamp.fromDate(promotedUntil!),
+        'isArchived': isArchived,
         'titleLower': title.toLowerCase(),
+        'submittedBy': submittedBy.isEmpty ? createdBy : submittedBy,
         'createdBy': createdBy,
         'stats': stats.toMap(),
         'createdAt': Timestamp.fromDate(createdAt),
